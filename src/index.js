@@ -1,41 +1,35 @@
-//require ('dotenv').config({path: './env'})
-
-import dotenv from "dotenv"
+// require ('dotenv').config({path: './env'})
+import dotenv from "dotenv";
+import express from "express";
 import mongoose from "mongoose";
 import { DB_NAME } from "./constants.js";
-import connectDB from "./controllers/db/index.js";
-dotenv.config({
-  path:'./env'
+import connectDB from "./db/index.js";
 
-}) 
+dotenv.config({
+  path: "./env",
+});
+
+const app = express();
+
+// Middleware
+app.use(express.json()); 
 
 connectDB()
+  .then(() => {
+    app.on("error", (error) => {
+      console.log("ERROR: ", error);
+      throw error;
+    });
 
-.then(()=>{
-
-
-
-  app.on("error",(error)=>{
-    console.log("ERROR: ", error);
-    throw error
+    app.listen(process.env.PORT || 8000, () => {
+      console.log(`Server is running on port: ${process.env.PORT || 8080}`);
+    });
   })
+  .catch((err) => {
+    console.log("MongoDB connection failed:", err);
+  });
 
-  app.listen(process.env.PORT || 8000,()=>{
-    console.log(`server is running one the port : ${process.env.PORT}`);
-  })
-
-})
-.catch((err)=>{
-  console.log("MONGOdb connnection failed", err);
-})
-
-
-
-
-
-
-
-
+export default app;
 
 
 
